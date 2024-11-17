@@ -6,7 +6,29 @@ const engine = new BABYLON.Engine(canvas, true);
 let particleSystem;
 let camera;
 
-var createScene = function () {
+// At the top with other global variables
+let currentColor = 0;
+const interpolationSpeed = 0.01;
+
+
+
+async function initScene() {
+    // Wait for initial data
+    while (pm1_0 === null) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    // Now create the scene
+    const scene = await createScene();
+
+    // Start render loop
+    engine.runRenderLoop(function () {
+        updateParticleColors();
+        scene.render();
+    });
+}
+
+async function createScene() {
     var scene = new BABYLON.Scene(engine);
 
     // Setup environment
@@ -41,15 +63,15 @@ var createScene = function () {
     // Colors of all particles (RGBA)
     //new particles colors range from color1 to color2
     //colorDead is the color of the particles when they disappear
-    //particleSystem.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0); 
-    //particleSystem.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
-    //particleSystem.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+    particleSystem.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
+    particleSystem.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
+    particleSystem.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
 
     console.log(`pm1.0: ${pm1_0}`);
 
-    particleSystem.color1 = new BABYLON.Color4(pm1_0, pm1_0, pm1_0, 1.0);
-    particleSystem.color2 = new BABYLON.Color4(pm1_0, pm1_0, pm1_0, 1.0);
-    particleSystem.colorDead = new BABYLON.Color4(0.2, 0.0, 0.0, 0.0); // Transparent dark red
+    // particleSystem.color1 = new BABYLON.Color4(pm1_0, pm1_0, pm1_0, 1.0);
+    // particleSystem.color2 = new BABYLON.Color4(pm1_0, pm1_0, pm1_0, 1.0);
+    // particleSystem.colorDead = new BABYLON.Color4(0.2, 0.0, 0.0, 0.0); // Transparent dark red
 
     console.log(particleSystem.color1)
     console.log(particleSystem.color1)
@@ -83,13 +105,20 @@ var createScene = function () {
     return scene;
 }
 
-// Call the createScene function
-const scene = createScene();
+// // Call the createScene function
+// const scene = createScene();
 
-// Register a render loop to repeatedly render the scene
-engine.runRenderLoop(function () {
-    scene.render();
-});
+// Call the init function instead of createScene directly
+initScene();
+
+// Create a function to update particle colors
+function updateParticleColors() {
+    // Smoothly interpolate towards target color
+    currentColor += (pm1_0 - currentColor) * interpolationSpeed;
+
+    particleSystem.color1 = new BABYLON.Color4(currentColor, currentColor, currentColor, 1.0);
+    particleSystem.color2 = new BABYLON.Color4(currentColor, currentColor, currentColor, 1.0);
+}
 
 // Watch for browser/canvas resize events
 window.addEventListener("resize", function () {
