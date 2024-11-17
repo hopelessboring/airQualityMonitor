@@ -8,6 +8,7 @@ window.pm10 = null;
 window.pm1_0 = null;
 window.pm2_5 = null;
 window.timestamp = null;
+window.maxAQI = null;
 
 // Breakpoints for pollutants
 const breakpoints = {
@@ -99,6 +100,7 @@ async function displayAirQualityData() {
 
         // Calculate maximum sub-index
         const maxSubIndex = Math.max(subIndexPM1_0, subIndexPM2_5, subIndexPM10, subIndexTVOC, subIndexeCO2);
+        window.maxAQI = maxSubIndex;
 
         // Output the results
         console.log('Latest readings:', latestData);
